@@ -11,11 +11,11 @@ const DIR = './uploads';
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'root',
+  user     : 'shivam',
   password : '',
-  database : 'nodedb'
+  database : 'colt'
 });
- 
+app.use(express.static(__dirname + "/"));
 connection.connect();
  
 global.db = connection;
@@ -56,7 +56,7 @@ app.post('/api/v1/upload',upload.single('profile'), function (req, res) {
         } else {
           console.log('file received');
           console.log(req);
-          var sql = "INSERT INTO `file`(`name`, `type`, `size`) VALUES ('" + req.file.filename + "', '"+req.file.mimetype+"', '"+req.file.size+"')";
+          var sql = "INSERT INTO `file`(`name`, `type`, `path`) VALUES ('" + req.file.filename + "', '"+req.file.mimetype+"', '"+req.file.path+"')";
   
                   var query = db.query(sql, function(err, result) {
                      console.log('inserted data');
@@ -66,5 +66,16 @@ app.post('/api/v1/upload',upload.single('profile'), function (req, res) {
   
         }
   });
+  app.get('/pic',(req,res)=>{
+    var q = 'SELECT path FROM file';
+    
+    connection.query(q, function (error, results) {
+    if (error) throw error;
+    var msg = "We have " + results + " users";
+    // res.send(msg);
+res.render("base.ejs",{p:results[1].path})
+console.log()
+    })
+  })
 //Middleware
 app.listen(8080)
